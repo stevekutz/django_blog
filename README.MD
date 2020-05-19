@@ -123,3 +123,34 @@ python manange.py startapp blog
     ~~~ py
     python manage.py migrate
     ~~~
+
+- the database now has the `blog_post` table
+ 
+    <img src = "Post_model_Migration.png"/>
+
+
+#### Setup Admin
+
+1) Create `superuser`
+
+    ~~~ py
+    python manage.py createsuperuser
+    ~~~
+
+2) Register models to admin site
+
+- orig
+
+    ~~~ py
+    from django.contrib import admin
+    ~~~
+
+- updated
+
+    ~~~ py
+    from django.contrib import admin
+    from .models import Post
+
+    # Register your models here.
+    admin.site.register(Post)
+    ~~~
