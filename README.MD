@@ -232,5 +232,45 @@ python manange.py startapp blog
         return render(request, 'blog/post/detail.html', {'post': post}) 
     ~~~
 
+2) Add URL patterns for views in the blog app
 
+- this maps URLs to views
+- the first pattern does not have arguments
+- the second pattern take four arguments
+- angle brackets are used to capture values from a URL as a strings
+- `path converters` are used to capture values. For example, <int:year> looks for a int parameter and returns an integer. Likewise, <slug:post> matches a slug string
+- <a href = "https://docs.djangoproject.com/en/3.0/topics/http/urls/#path-converters"> Django path converters</a>
+- `name` maps the view
+    ~~~ py
+    from django.urls import path
+    from . import views
 
+    app_name = 'blog'
+
+    urlpatterns = [
+        # post views
+        path('', views.post_list, name = 'post_list'),
+        path('<int:year>/<int:month>/<int:day>/<slug:post>/', views.post_detail, name = 'post_detail'),
+        
+    ]
+    ~~~
+
+3) Update the project `urls.py`
+
+- add the `include` import
+
+- add the following to the `urlpatterns` variable
+
+- the `namespace` blog allow precise reversing of `names URL patterns`
+
+    ~~~ py
+
+    from django.urls import path, include
+
+    urlpatterns = [
+        path('admin/', admin.site.urls),
+        path('blog/', include('blog.urls', namespace = 'blog')),
+
+    ]
+
+    ~~~
