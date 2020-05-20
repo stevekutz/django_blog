@@ -145,8 +145,7 @@ python manange.py startapp blog
     from django.contrib import admin
     ~~~
 
-- updated
-
+- updated 
     ~~~ py
     from django.contrib import admin
     from .models import Post
@@ -154,3 +153,30 @@ python manange.py startapp blog
     # Register your models here.
     admin.site.register(Post)
     ~~~
+    
+3) Launch server and log into admin panel at URL `http://127.0.0.1:8000/admin` too see the admin panel
+
+    <img src = "Admin_panel.png" width = "60%"/>
+
+4) Select Add post and note timezone message
+
+   - message varies depending on your actual timezone
+
+        <img src = "Addpost_timezone_message.png" width = "50%"/>
+
+        - this can be resolved by modifying `TIME_ZONE` in `settings.py` to your actual timezone
+
+        - before
+
+            ~~~ py
+            TIME_ZONE = 'UTC'
+            ~~~
+
+        - after
+
+            ~~~ py
+            TIME_ZONE = 'America/Chicago'
+            ~~~
+
+    - However, modifying `TIME_ZONE` can cause issues with Daylight Savings Time. It is recommended to use `UTC` time in the database and convert to `local time` for user interactions. <a href = "https://docs.djangoproject.com/en/3.0/topics/i18n/timezone"> see Time zones Django documentation</a>  
+
