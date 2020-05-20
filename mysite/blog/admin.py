@@ -5,7 +5,7 @@ from .models import Post
 # admin.site.register(Post)
 
 # Custom models 
-@admin.register(Post)
+@admin.register(Post)   # decorator performs same as admin.site.register(Post)
 class PostAdmin(admin.ModelAdmin):
     list_display = ('title', 'slug', 'author', 'publish', 'status')
     list_filter = ('status', 'created', 'publish', 'author')

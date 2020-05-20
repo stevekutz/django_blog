@@ -180,3 +180,57 @@ python manange.py startapp blog
 
     - However, modifying `TIME_ZONE` can cause issues with Daylight Savings Time. It is recommended to use `UTC` time in the database and convert to `local time` for user interactions. <a href = "https://docs.djangoproject.com/en/3.0/topics/i18n/timezone"> see Time zones Django documentation</a>  
 
+#### Customize admin model
+
+1) Add the following model to `admin.py`
+
+   - note the `admin options` 
+     
+   -  <a href = "https://docs.djangoproject.com/en/3.0/ref/contrib/admin/"> Django admin options </a>
+
+    ~~~ py
+    from django.contrib import admin
+    from .models import Post
+
+    # Register your models here.
+    # admin.site.register(Post)
+
+    # Custom models 
+    @admin.register(Post)   # decorator performs same as admin.site.register(Post)
+    class PostAdmin(admin.ModelAdmin):
+        list_display = ('title', 'slug', 'author', 'publish', 'status')
+        list_filter = ('status', 'created', 'publish', 'author')
+        search_fields = ('title', 'body')
+        prepopulated_fields = {'slug': ('title',)}
+        raw_id_fields = ('author',)
+        date_hierarchy = 'publish'
+        ordering = ('status', 'publish')
+    ~~~
+
+#### Create list & detail views
+
+1) Add the following views
+
+    ~~~ py
+    from django.shortcuts import render, get_object_or_404
+    from .models import Post
+
+    # Create your views here.
+    def post_list(request):
+        posts = Post.pubished.all()
+        return render(request, 'blog/post/list.html', {'posts': posts})
+
+
+    def post_detail(request, year, month, day, post):
+        post = get_object_or_404(Post, 
+                                slug = post, 
+                                status = 'published', 
+                                publish__yer = year,
+                                publish__month = month,
+                                publish__day = day)    
+
+        return render(request, 'blog/post/detail.html', {'post': post}) 
+    ~~~
+
+
+
