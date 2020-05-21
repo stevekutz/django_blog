@@ -34,6 +34,12 @@ class Post(models.Model):
     def __str__(self):   # creates a human-readable representation of the object
         return self.title
 
+    def get_absolute_url(self):
+        return reverse("blog:post_detail",   # define args next, kwargs can also be implmented
+                         args=[self.publish.year,
+                               self.publish.month,
+                               self.publish.day,
+                               self.slug ])
     
 
 

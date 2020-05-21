@@ -274,3 +274,62 @@ python manange.py startapp blog
     ]
 
     ~~~
+
+#### Implement Canonical URLs for models
+
+- Canonical means `preferred` and is a unique URL
+- the `reverse` method allows URLs to be built using their name and also allows passing additional parameters
+
+- Add the following to `models.py`
+
+    ~~~ py
+
+    def get_absolute_url(self):
+        return reverse("blog:post_detail",   # define args next, kwargs can also be implmented
+                         args=[self.publish.year,
+                               self.publish.month,
+                               self.publish.day,
+                               self.slug ])
+    
+    ~~~
+
+#### Create templates for the views    
+
+1) Set up the following folders and files inside the `blog` app
+
+    <img src = 'template_structure.png'/>
+
+- use template tags, template variables, and template filters to create templates
+
+2) Create the `base.html` template
+
+- 
+
+    ~~~ html
+    {% load static %}
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <title>{% block title %} {% endblock %} </title>
+            <link href = "{% statu "css/blog.css"%}" rel = "stylesheet">
+        </head>
+
+        <body>
+
+            <div id = "content">
+                {% block content %}
+
+                {% end block %}
+
+            </div>
+
+            <div id = "sidebar">
+                <h2> My blog </h2>
+                <p> This is my blog </p>
+
+            </div>
+
+        </body>
+
+    </html>
+    ~~~
