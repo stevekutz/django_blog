@@ -217,7 +217,7 @@ python manange.py startapp blog
 
     # Create your views here.
     def post_list(request):
-        posts = Post.pubished.all()
+        posts = Post.published.all()
         return render(request, 'blog/post/list.html', {'posts': posts})
 
 
@@ -281,6 +281,13 @@ python manange.py startapp blog
 - the `reverse` method allows URLs to be built using their name and also allows passing additional parameters
 
 - Add the following to `models.py`
+- import `reverse`
+
+    ~~~ py
+    from django.urls import reverse
+    ~~~
+
+- create `get_absolute_url` method to link to specific posts
 
     ~~~ py
 
@@ -293,6 +300,15 @@ python manange.py startapp blog
     
     ~~~
 
+#### Update the models
+- import `reverse`
+
+    ~~~ py
+    from django.urls import reverse
+    ~~~
+
+- 
+
 #### Create templates for the views    
 
 1) Set up the following folders and files inside the `blog` app
@@ -303,7 +319,7 @@ python manange.py startapp blog
 
 2) Create the `base.html` template
 
-- 
+- utilizes `static files`
 
     ~~~ html
     {% load static %}
@@ -311,7 +327,7 @@ python manange.py startapp blog
     <html>
         <head>
             <title>{% block title %} {% endblock %} </title>
-            <link href = "{% statu "css/blog.css"%}" rel = "stylesheet">
+            <link href = "{% static "css/blog.css"%}" rel = "stylesheet">
         </head>
 
         <body>
@@ -319,7 +335,7 @@ python manange.py startapp blog
             <div id = "content">
                 {% block content %}
 
-                {% end block %}
+                {% endblock %}
 
             </div>
 
@@ -333,3 +349,8 @@ python manange.py startapp blog
 
     </html>
     ~~~
+
+1) Create the `list.html`template
+
+- `extends` allows this template to inherit from the `base.html` file
+- 2 template filters are applied in the body of the post
