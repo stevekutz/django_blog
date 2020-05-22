@@ -225,7 +225,7 @@ python manange.py startapp blog
         post = get_object_or_404(Post, 
                                 slug = post, 
                                 status = 'published', 
-                                publish__yer = year,
+                                publish__year = year,
                                 publish__month = month,
                                 publish__day = day)    
 
@@ -350,7 +350,59 @@ python manange.py startapp blog
     </html>
     ~~~
 
-1) Create the `list.html`template
+3) Create the `list.html`template
 
 - `extends` allows this template to inherit from the `base.html` file
 - 2 template filters are applied in the body of the post
+
+    ~~~ html
+    {% extends "blog/base.html" %}
+
+    {% block title %} My Blog {% endblock %}
+
+    {% block content %}
+        <h1> My Blog! </h1>
+
+        {% for post in posts %}
+            <h2>
+                <a href = "{{ post.get_absolute_url }}">
+                    {{ post.title }}
+                </a>
+            </h2>
+
+            <p class = "date">
+                Published {{ post.publish }} by {{ post.author }}
+            </p>
+
+            {{ post.body|truncatewords:30|linebreaks}}
+
+        {% endfor %}
+
+    {%endblock%}
+    ~~~
+
+4) Create `detail.html` template
+
+    ~~~ html
+    {% extends "blog/base.html" %}
+
+    {% block title %} {{ post.title }} {% endblock %}
+
+    {% block content %}
+        <h1> {{post.title}} </h1>
+        <p class = "date">
+            Published {{post.publish}} by {{post.author}}
+        </p>
+
+        {{post.body|linebreaks}}
+    {% endblock %} 
+    ~~~
+
+#### Add Pagination
+
+1) In `views.py` add the following import
+
+~~~ py
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+~~~
+
