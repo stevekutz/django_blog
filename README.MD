@@ -402,7 +402,86 @@ python manange.py startapp blog
 
 1) In `views.py` add the following import
 
-~~~ py
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-~~~
+    ~~~ py
+    from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+    ~~~
 
+2) Within `template\blog` create `pagination.html` template
+
+    ~~~ html
+    <div class = "pagination">
+        <span class = "step-links">
+        {% if page.has_previous %}
+            <a href = "?page = {{ page.previous_page_number }}">Previous</a>
+        {% endif %}
+
+            <span class = "current">
+                Page {{page.number}} of {{page.paginator.num_pages}}. 
+            </span>
+
+            {% if page.has_next %}
+                <a href = "?page={{page.next_page_number }}">Next</a>
+            {%endif%}
+        </span>
+    </div>
+    ~~~
+
+3) Within the `list.html` template, add the following to refer to the pagination template
+
+    ~~~ html
+    ...
+    {% endfor %}
+
+        {% include "pagination.html" with page=posts %}
+
+    {%endblock%}
+    ~~~
+
+#### Using Class-based views
+
+- views are implemented as Python objects instead of functions
+
+1) Add `from django.views.generic import ListView` to `views.py`
+
+2) Create the following class-based view in `views.py`
+
+- the following two lines are analogous and create the queryset
+
+    ~~~ py
+        model = Post
+        # queryset = Post.published.all()
+    ~~~
+
+- Although `object_list` is generically created for the query results, using `context_object_name` makes your code easier to follow    
+
+    ~~~ py
+    class PostListView(ListView):
+        model = Post
+        # queryset = Post.published.all()
+        context_object_name = 'posts'
+        paginate_by = 3
+        template_name = 'blog/post/list.html'
+    ~~~
+
+3) Modify `blog\urls.py` to use the `PostListView` class
+
+    ~~~ py
+    urlpatterns = [
+        # post views
+        # path('', views.post_list, name = 'post_list'),
+        path('', views.PostListView.as_view(), name = 'post_list'),
+        ...
+    ~~~
+
+4) Update the `list.html` file to receive an obj
+
+- NOTE: you must not put any spaces within `page=page_obj`
+
+    ~~~ html
+        {% endfor %}
+
+        <!--  {% include "pagination.html" with page=posts %} -->
+        {% include "pagination.html" with page=page_obj %}
+    {%endblock%}
+
+    ~~~
