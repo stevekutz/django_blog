@@ -122,4 +122,4 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = ''   #  NOW this REALLY should not show up
+EMAIL_HOST_USER = ''   #  DONE NOW
