@@ -556,3 +556,51 @@ from .forms import emailPostForm
     EMAIL_PORT = 587
     EMAIL_USE_TLS = True
     ~~~
+
+3) Modify `views.py`
+- import send_mail
+
+    ~~~ py
+    from django.core.mail import send_mail
+    ~~~
+
+- modify `post_share` in `view.py`
+
+    ~~~ py
+    def post_share(request, post_id):
+        # Retrieve post by ID
+        post = get_object_or_404(Post, id = post_id, status = "published")
+        sent = False
+
+        if request.method == 'POST':
+            # form was submitted with data
+            form = emailPostForm(request.POST)
+            if form.is_valid():
+                # Form fields passed validation
+                cd = form.cleaned_data 
+                # ... send email
+                post_url = request.build.absolute_uri(post.get_absolute_url())
+                subject = f"{cd['name']} recommends you read " f"{post.title}"
+                message = f"Read {post.title} at {post_url} \n\n" f"cd['name']\'s comments: {cd['comments']}"
+                send_mail(subject, message, 'sktestdjango@gmail.com', [cd['to']])
+                sent = True
+
+        else:  # show blank form
+            form = EmailPostForm()        
+
+        context = {'post': post, 'form': form, 'sent': sent}
+
+        return render(request, 'blog/post/share.html', context)  
+    ~~~
+
+4) Add the path in `/blogs/urls.py`    
+
+    ~~~ py
+    urlpatterns = [
+        # post views
+        # path('', views.post_list, name = 'post_list'),
+        path('', views.PostListView.as_view(), name = 'post_list'),
+        path('<int:year>/<int:month>/<int:day>/<slug:post>/', views.post_detail, name = 'post_detail'),
+        path('<int:post_id>/share/', views.post_share, name = 'post_share'),
+    ]
+    ~~~
