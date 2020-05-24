@@ -528,3 +528,31 @@ from .forms import emailPostForm
 - a `GET` request indicates an empty form has to be displayed
 - a `POST` request indicates that valid form data has been submitted for the form to process
 - `request.method = POST` distinguishes between these twp scenarios
+
+#### Sending emails with Django
+
+1) Django will write emails to the console if this is added to `settings.py`
+
+    ~~~ py
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    ~~~
+
+2) To use the SMTP server for gmail, add the following with a valid gmail account
+- IMPORTANT !! You can hide this info from tracking this sensitive info in github by going into the directory and issuing the following command to halt tracking changes on settings.py
+
+    ~~~ bash
+    git update-index --assume-unchanged settings.py
+    ~~~
+
+    NOTE - This will restore tracking changes !
+    ~~~ bash
+    git update-index --no-assume-unchanged settings.py
+    ~~~
+
+    ~~~ py
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_HOST_USER = 'valid_gmail_account@gmail.com'
+    EMAIL_HOST_PASSWORD = 'password for the account'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    ~~~
