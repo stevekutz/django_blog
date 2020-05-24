@@ -505,7 +505,7 @@ python manange.py startapp blog
     ~~~ py
     from django import forms
 
-    class emailPostForm(forms.Form):
+    class EmailPostForm(forms.Form):
         name = forms.CharField(max_length = 25)
         email = forms.EmailField()
         to = forms.EmailField()
@@ -517,7 +517,7 @@ python manange.py startapp blog
 - add the `EmailPostForm` import to `views.py`
 
 ~~~ py
-from .forms import emailPostForm
+from .forms import EmailPostForm
 ~~~
 
 - Add the `post_share` view
@@ -579,9 +579,9 @@ from .forms import emailPostForm
                 # Form fields passed validation
                 cd = form.cleaned_data 
                 # ... send email
-                post_url = request.build.absolute_uri(post.get_absolute_url())
+                post_url = request.build_absolute_uri(post.get_absolute_url())
                 subject = f"{cd['name']} recommends you read " f"{post.title}"
-                message = f"Read {post.title} at {post_url} \n\n" f"cd['name']\'s comments: {cd['comments']}"
+                message = f"Read {post.title} at {post_url} \n\n" f"{cd['name']}\'s comments: {cd['comments']}"
                 send_mail(subject, message, 'sktestdjango@gmail.com', [cd['to']])
                 sent = True
 
@@ -603,4 +603,35 @@ from .forms import emailPostForm
         path('<int:year>/<int:month>/<int:day>/<slug:post>/', views.post_detail, name = 'post_detail'),
         path('<int:post_id>/share/', views.post_share, name = 'post_share'),
     ]
+    ~~~
+
+5) Create the `share` template inside `blog/post`
+
+    ~~~ html
+    {% extends "blog/base.html" %}
+
+    {% block title %} Share a post {% endblock %}
+
+    {% block content %}
+        {% if sent %}
+            <h1> E-mail succesfully sent </h1>
+            <p> 
+                "{{ post.title}}" was succesfully sent to {{ form.cleaned_data.to}}.
+            </p>
+        {% else %}
+            <h1> Share "{{ post.title }}" by e-mail </h1>
+            <form method = "post">
+                {% for field in form%}
+                    <div>
+                        {{ field.errors }}
+                        {{ field.label_tag }} {{ field }}
+                    </div>
+                {% endfor %}
+                {% csrf_token %}
+                <input type = "submit" value = "Send e-mail">
+            </form>
+        {% endif %}    
+
+    {% endblock %}
+
     ~~~
