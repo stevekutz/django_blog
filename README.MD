@@ -485,3 +485,46 @@ python manange.py startapp blog
     {%endblock%}
 
     ~~~
+
+5) Add a link to return to the main blogs page
+
+    ~~~ html
+    <a href = '/blog'> return to all blogs </a>
+    ~~~
+
+### Adding Forms to blog
+
+1) Create a `forms.py` file inside the blog app
+
+- this subclassess the bse Form class
+- the CharField typcially renders as a HTML `input` element
+- `widget = forms.Textarea` overrides this and renders as an HTML `textarea` element
+- email validation is done on anything with `EmailField()`
+- <a href = 'https://docs.djangoproject.com/en/3.0/ref/forms/fields/'> Django Form Fields documentation <a/>
+
+    ~~~ py
+    from django import forms
+
+    class emailPostForm(forms.Form):
+        name = forms.CharField(max_length = 25)
+        email = forms.EmailField()
+        to = forms.EmailField()
+        comments = forms.CharField(required = False, widget = forms.Textarea)
+    ~~~
+
+2) Create a view for the form
+
+- add the `EmailPostForm` import to `views.py`
+
+~~~ py
+from .forms import emailPostForm
+~~~
+
+- Add the `post_share` view
+
+- it has both `request` & `post_id` as parameters
+- `get_object_or_404` verifies that post has `published status`
+- the same view is used for initial blank forms as well as forms with submitted data
+- a `GET` request indicates an empty form has to be displayed
+- a `POST` request indicates that valid form data has been submitted for the form to process
+- `request.method = POST` distinguishes between these twp scenarios
