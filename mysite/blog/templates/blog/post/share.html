@@ -11,6 +11,8 @@
     {% else %}
         <h1> Share "{{ post.title }}" by e-mail </h1>
         <form method = "post">
+        <!-- Example data that is looped in
+            cd is {'name': 'ME', 'email': 'sktestdjango@gmail.com', 'to': 'sktestdjango@gmail.com', 'comments': 'DEBUG test AGAIN'}  -->
             {% for field in form %}
                 <div>
                     {{ field.errors }}

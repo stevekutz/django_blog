@@ -57,15 +57,17 @@ def post_share(request, post_id):
     if request.method == 'POST':
         # form was submitted with data
         form = EmailPostForm(request.POST)
+        print('form is', form)
         if form.is_valid():
             # Form fields passed validation
             cd = form.cleaned_data 
+            print("cd is", cd)
             # ... send email
             post_url = request.build_absolute_uri(post.get_absolute_url())
             subject = f"{cd['name']} recommends you read " f"{post.title}"
             message = f"Read {post.title} at {post_url} \n\n" f"{cd['name']}\'s comments: {cd['comments']}"
             send_mail(subject, message, 'sktestdjango@gmail.com', [cd['to']])
-            sent = True
+            sent = True   # used to show successs message 
 
     else:  # show blank form
         form = EmailPostForm()        

@@ -539,7 +539,7 @@ from .forms import EmailPostForm
 
 2) To use the SMTP server for gmail, add the following with a valid gmail account
 - IMPORTANT !! You can hide this info from tracking this sensitive info in github by going into the directory and issuing the following command to halt tracking changes on settings.py
-
+- TLS is a cryptographic protocol that provides end-to-end security of data sent between applications over the Internet.
     ~~~ bash
     git update-index --assume-unchanged settings.py
     ~~~
@@ -558,42 +558,45 @@ from .forms import EmailPostForm
     ~~~
 
 3) Modify `views.py`
-- import send_mail
+   - import send_mail
 
-    ~~~ py
-    from django.core.mail import send_mail
-    ~~~
+       ~~~ py
+       from django.core.mail import send_mail
+       ~~~
 
-- modify `post_share` in `view.py`
+- modify `post_share` in `views.py`
+    - A URI (Uniform Resource Identifier) is a string that refers to a resource such as a URL
+    - get_absolute_url() method to tell Django how to calculate the canonical URL for an object. To callers, this method should appear to return a string that can be used to refer to the object over HTTP.
+    - an example of cd is `cd is {'name': 'ME', 'email': 'sktestdjango@gmail.com', 'to': 'sktestdjango@gmail.com', 'comments': 'Some comment'}`
 
-    ~~~ py
-    def post_share(request, post_id):
-        # Retrieve post by ID
-        post = get_object_or_404(Post, id = post_id, status = "published")
-        sent = False
+        ~~~ py
+        def post_share(request, post_id):
+            # Retrieve post by ID
+            post = get_object_or_404(Post, id = post_id, status = "published")
+            sent = False
 
-        if request.method == 'POST':
-            # form was submitted with data
-            form = emailPostForm(request.POST)
-            if form.is_valid():
-                # Form fields passed validation
-                cd = form.cleaned_data 
-                # ... send email
-                post_url = request.build_absolute_uri(post.get_absolute_url())
-                subject = f"{cd['name']} recommends you read " f"{post.title}"
-                message = f"Read {post.title} at {post_url} \n\n" f"{cd['name']}\'s comments: {cd['comments']}"
-                send_mail(subject, message, 'sktestdjango@gmail.com', [cd['to']])
-                sent = True
+            if request.method == 'POST':
+                # form was submitted with data
+                form = EmailPostForm(request.POST)
+                if form.is_valid():
+                    # Form fields passed validation
+                    cd = form.cleaned_data 
+                    # ... send email
+                    post_url = request.build_absolute_uri(post.get_absolute_url())
+                    subject = f"{cd['name']} recommends you read " f"{post.title}"
+                    message = f"Read {post.title} at {post_url} \n\n" f"{cd['name']}\'s comments: {cd['comments']}"
+                    send_mail(subject, message, 'sktestdjango@gmail.com', [cd['to']])
+                    sent = True
 
-        else:  # show blank form
-            form = EmailPostForm()        
+            else:  # show blank form
+                form = EmailPostForm()
 
-        context = {'post': post, 'form': form, 'sent': sent}
+            context = {'post': post, 'form': form, 'sent': sent}
 
-        return render(request, 'blog/post/share.html', context)  
-    ~~~
+            return render(request, 'blog/post/share.html', context)  
+        ~~~
 
-4) Add the path in `/blogs/urls.py`    
+1) Add the path in `/blogs/urls.py`    
 
     ~~~ py
     urlpatterns = [
@@ -605,7 +608,7 @@ from .forms import EmailPostForm
     ]
     ~~~
 
-5) Create the `share` template inside `blog/post`
+2) Create the `share` template inside `blog/post`
 
     ~~~ html
     {% extends "blog/base.html" %}
@@ -621,6 +624,9 @@ from .forms import EmailPostForm
         {% else %}
             <h1> Share "{{ post.title }}" by e-mail </h1>
             <form method = "post">
+            <!-- Example data that is looped in
+            cd is {'name': 'ME', 'email': 'sktestdjango@gmail.com', 'to': 'sktestdjango@gmail.com', 'comments': 'DEBUG test AGAIN'}  -->    
+                
                 {% for field in form%}
                     <div>
                         {{ field.errors }}
