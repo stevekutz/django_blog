@@ -452,7 +452,7 @@ python manange.py startapp blog
         # queryset = Post.published.all()
     ~~~
 
-- Although `object_list` is generically created for the query results, using `context_object_name` makes your code easier to follow    
+- Although `object_list` is generically created for the query results, using `context_object_name` makes your code easier to follow
 
     ~~~ py
     class PostListView(ListView):
@@ -639,5 +639,167 @@ from .forms import EmailPostForm
         {% endif %}    
 
     {% endblock %}
+
+    ~~~
+
+#### Comment functionality
+
+1) Add a model for storing comments
+
+- The `ForeignKey` associates one `Post` to many `Commments`
+- this is a `one-to-many` relationship
+- the `related_name` attribute allows retrieval  all of a post's comments using `post.comments.all()`
+- If `related_name` was not defined, Django would use `comment_set` instead
+- Generally, `related_name` is the name to use for the relation from the related object back to this one
+- the `active` attribute allows for comments to be turned off(e.g. hidden)
+
+    ~~~ py
+    class Comment(models.Model):
+        post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+        name = models.CharField(max_length=80)
+        email = models.EmailField()
+        body = models.TextField()
+        created = models.DateTimeField(auto_now_add = True)
+        updated = models.DateTimeField(auto_now=True)
+        active = models.BooleanField(default = True)
+
+        class Meta:  # just a class container with some options (metadata)
+            ordering: ('created',)
+
+        def __str__(self):
+            return f'Comment by {self.name} on {self.post}' 
+    ~~~
+
+2) Create a new migration in terminal of the virtual environment
+
+    ~~~ bash
+    python manage.py makemigrations blog
+    ~~~
+
+3) Run the migration
+
+    ~~~ bash
+    python manage.py migrate
+    ~~~
+
+4) Register model with the admin interface in `admin.py`
+
+- include the `Comment` import
+
+- add the custom Model
+
+    ~~~ py
+    @admin.register(Comment)
+    class CommentAdmin(admin.ModelAdmin):
+        list_display = ('name', 'email', 'post', 'created', 'active' )
+        list_filter = ('active', 'created', 'updated')
+        search_fields = ('name', 'email', 'body')
+    ~~~
+
+5) Modify `forms.py` to allow dynamically built forms from `Comment` model
+
+- include the `Comment` import
+
+- add th following class
+
+    ~~~ py
+    class CommentForm(forms.ModelForm):
+        class Meta:
+            model = Comment
+            fields = ('name', 'email', 'body')
+    ~~~
+
+6) Modify the `post_detail` view    
+
+- import the `Comment` model and `CommentForm`
+
+    ~~~ py
+    from .models import Post, Comment
+    from .forms import EmailPostForm, CommentForm
+    ~~~
+
+    ~~~ py
+    def post_detail(request, year, month, day, post):
+        post = get_object_or_404(Post, 
+                                slug = post, 
+                                status = 'published', 
+                                publish__year = year,
+                                publish__month = month,
+                                publish__day = day)    
+
+
+
+        # list of active comments for this post
+        comments = post.comments.filter(active = True)
+
+        new_comment = None
+
+        if request.method == 'POST':
+            # A comment was posted
+            comment_form = CommentForm( data=request.POST )
+
+            if comment_form.is_valid():
+                # create comment obj but do not save to database yet
+                new_comment = comment_form.save(commit = False)
+                # Assign current post to comment
+                new_comment.post = post
+                # Save the comment to the database
+                new_comment.save()
+
+        else:  # provide blank comment form
+                comment_form = CommentForm()
+
+
+        context = {'post': post, 'comments': comments, 
+                   'new_comment': new_comment, 'comment_form': comment_form }
+
+        return render(request, 'blog/post/detail.html', context) 
+    ~~~
+
+7) Add comments to `post_detail` template content block
+
+    ~~~ py
+        {% with comments.count as total_comments %}
+            <h2>
+                {{ total_comments }} comment {{ total_comments|pluralize }}
+            </h2>
+        {% endwith %}  
+
+        {% for comment in comments %}
+                <div class = "comment">
+                    <p clss = "info">
+                        Comment {{ forloop.counter }} by {{ comment.name }}
+                    </p>
+                    {{ comment.body|linebreaks }}
+                </div>
+            {% empty %}
+                <p> There are no comments yet </p>    
+            {% endfor %}
+        {% if new_comment %}
+            <h2> Your comment has been added </h2>
+        {% else %}
+            <h2> Add a new comment </h2>
+            <form method = 'post'>
+                {{ comment_form.as_p }}
+                {% csrf_token %}
+                <p>
+                    <input type = "submit" value = "Add Comment">
+                </p>
+            </form>
+
+
+        {% endif %}
+    ~~~
+   
+8) Move `return to all blogs` link to below `Share this post link`
+
+    ~~~ html
+        <p>
+            <a href = "{% url "blog:post_share" post.id %}"> Share this post <a/>
+        </p>
+
+        <p>
+                <a href = '/blog'> return to all blogs </a>
+        </p>
 
     ~~~
