@@ -850,3 +850,132 @@ tags = TaggableManager()
     ~~~ py
     python manage.py migrate
     ~~~
+
+6) Modify the `list` template to display tags
+
+- the `join` template filter
+- <a href = "https://docs.djangoproject.com/en/3.0/ref/templates/builtins/#filter"> Django templte filters </a>
+
+    ~~~ py
+        ...
+        {{ post.title }}
+
+        <p class = 'tags'> Tags: {{ post.tags.all|join:", " }}</p>
+        ...
+    ~~~
+
+7) Modify `views.py` to allow listing of posts with a specific tag
+
+    - import `Tag` model
+
+    ~~~ py
+        from taggit.models import Tag
+    ~~~
+
+    - modify `post_list` view to filter posts by tag
+
+    ~~~ py
+        def post_list(request, tag_slug = None):
+            object_list = Post.published.all()
+            
+            tag = None
+
+            if tag_slug:
+                tag = get_object_or_404(Tag, slug = tag_slug)
+                object_list = object_list.filter(tags__in = [tag])
+    ~~~
+
+    - include `tags` in the `context`
+
+    ~~~ py
+        context = {'page': page, 'posts': posts, 'tag': tag}
+    ~~~
+
+ 8) Modify `urls.py`
+
+- `name` allows calling the same view with different parameters
+
+    ~~~ py
+        urlpatterns = [
+            # post views
+            path('', views.post_list, name = 'post_list'),
+            # path('', views.PostListView.as_view(), name = 'post_list'),
+            path('tag/<slug:tag_slug>/', views.post_list, name = 'post_list_by_tag'),
+            path('<int:year>/<int:month>/<int:day>/<slug:post>/', views.post_detail, name = 'post_detail'),
+            path('<int:post_id>/share/', views.post_share, name = 'post_share'),
+        ]
+    ~~~
+
+1) Modify the `list` template
+
+    - before
+        ~~~ html
+            {% extends "blog/base.html" %}
+
+            {% block title %} My Blog {% endblock %}
+
+            {% block content %}
+                <h1> My Blog! </h1>
+
+                {% for post in posts %}
+                    <h2>
+                        <a href = "{{ post.get_absolute_url }}">
+                            {{ post.title }}
+                        </a>
+                    </h2>
+
+                    <p class = "date">
+                        Published {{ post.publish }} by {{ post.author }}
+                    </p>
+
+                    {{ post.body|truncatewords:30|linebreaks}}
+
+                {% endfor %}
+
+                <!--  {% include "pagination.html" with page=posts %} -->
+                {% include "pagination.html" with page=page_obj %}
+            {%endblock%}
+        ~~~
+
+    - after
+
+    ~~~ html
+        {% extends "blog/base.html" %}
+
+        {% block title %} My Blog {% endblock %}
+
+        {% block content %}
+            <h1> My Blog! </h1>
+
+            {% if tag %}
+                <h2> posts tagged with "{{ tag.name }}" </h2>
+            {% endif %}
+
+            {% for post in posts %}
+                <h2>
+                    <a href = "{{ post.get_absolute_url }}">
+                        {{ post.title }}
+                    </a>
+                </h2>
+
+                <p class = "tags">
+                    Tags:
+                    {% for tag in post.tags.all %}
+                        <a href = "{% url "blog:post_list_by_tag" tag.slug %}">
+                            {{ tag.name }}
+                        <a/>
+                        {% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+
+                <p class = "date">
+                    Published {{ post.publish }} by {{ post.author }}
+                </p>
+
+                {{ post.body|truncatewords:30|linebreaks}}
+
+            {% endfor %}    
+
+            {% include "pagination.html" with page=posts %}
+            <!-- {% include "pagination.html" with page=page_obj %} -->
+        {%endblock%}
+    ~~~
