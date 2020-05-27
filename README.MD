@@ -803,3 +803,50 @@ from .forms import EmailPostForm
         </p>
 
     ~~~
+
+#### Add tagging functionality
+
+1) Utilize the 3rd party app `django-taggit`
+
+- from virtual environment in terminal run
+
+    ~~~ bash
+    pip install django_taggit
+    ~~~
+
+ 2) Add the app to `INSTALLED_APPS` in `settings.py`
+
+    ~~~ py
+    ...
+    INSTALLED_APPS = [
+        'blog.apps.BlogConfig',
+        'taggit',
+        'django.contrib.admin',
+    ...
+    ~~~
+
+ 3) Add `taggit` to `models.py`
+
+- import taggit
+
+    ~~~ py
+    from taggit.managers import TaggableManager
+    ~~~
+
+- append to the `Post` model
+- the `tags` manager allows adding, retreiving, &  removal of tags from `Post` objects
+~~~ py
+tags = TaggableManager()
+~~~
+
+4) Create a migration for the changes to `model.py`
+
+    ~~~ py
+    python manage.py makemigrations blog
+    ~~~ 
+
+5) Run migration
+
+    ~~~ py
+    python manage.py migrate
+    ~~~
