@@ -1026,9 +1026,7 @@ tags = TaggableManager()
 
             <p>
                 <a href = '/blog'> return to all blogs </a>
-            </p> 
-        
-
+            </p>
         ...
     ~~~
 
