@@ -868,32 +868,32 @@ tags = TaggableManager()
 
     - import `Tag` model
 
-    ~~~ py
-        from taggit.models import Tag
-    ~~~
+        ~~~ py
+            from taggit.models import Tag
+        ~~~
 
     - modify `post_list` view to filter posts by tag
 
-    ~~~ py
-        def post_list(request, tag_slug = None):
-            object_list = Post.published.all()
-            
-            tag = None
+        ~~~ py
+            def post_list(request, tag_slug = None):
+                object_list = Post.published.all()
+                
+                tag = None
 
-            if tag_slug:
-                tag = get_object_or_404(Tag, slug = tag_slug)
-                object_list = object_list.filter(tags__in = [tag])
-    ~~~
+                if tag_slug:
+                    tag = get_object_or_404(Tag, slug = tag_slug)
+                    object_list = object_list.filter(tags__in = [tag])
+        ~~~
 
     - include `tags` in the `context`
 
-    ~~~ py
-        context = {'page': page, 'posts': posts, 'tag': tag}
-    ~~~
+        ~~~ py
+            context = {'page': page, 'posts': posts, 'tag': tag}
+        ~~~
 
  8) Modify `urls.py`
 
-- `name` allows calling the same view with different parameters
+- `name` allows calling the same view with and without parameters
 
     ~~~ py
         urlpatterns = [
@@ -906,7 +906,7 @@ tags = TaggableManager()
         ]
     ~~~
 
-1) Modify the `list` template
+9) Modify the `list` template
 
     - before
         ~~~ html
@@ -939,43 +939,43 @@ tags = TaggableManager()
 
     - after
 
-    ~~~ html
-        {% extends "blog/base.html" %}
+        ~~~ html
+            {% extends "blog/base.html" %}
 
-        {% block title %} My Blog {% endblock %}
+            {% block title %} My Blog {% endblock %}
 
-        {% block content %}
-            <h1> My Blog! </h1>
+            {% block content %}
+                <h1> My Blog! </h1>
 
-            {% if tag %}
-                <h2> posts tagged with "{{ tag.name }}" </h2>
-            {% endif %}
+                {% if tag %}
+                    <h2> posts tagged with "{{ tag.name }}" </h2>
+                {% endif %}
 
-            {% for post in posts %}
-                <h2>
-                    <a href = "{{ post.get_absolute_url }}">
-                        {{ post.title }}
-                    </a>
-                </h2>
+                {% for post in posts %}
+                    <h2>
+                        <a href = "{{ post.get_absolute_url }}">
+                            {{ post.title }}
+                        </a>
+                    </h2>
 
-                <p class = "tags">
-                    Tags:
-                    {% for tag in post.tags.all %}
-                        <a href = "{% url "blog:post_list_by_tag" tag.slug %}">
-                            {{ tag.name }}
-                        <a/>
-                        {% if not forloop.last %}, {% endif %}
-                    {% endfor %}
+                    <p class = "tags">
+                        Tags:
+                        {% for tag in post.tags.all %}
+                            <a href = "{% url "blog:post_list_by_tag" tag.slug %}">
+                                {{ tag.name }}
+                            </a>
+                            {% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </p>
+                    <p class = "date">
+                        Published {{ post.publish }} by {{ post.author }}
+                    </p>
 
-                <p class = "date">
-                    Published {{ post.publish }} by {{ post.author }}
-                </p>
+                    {{ post.body|truncatewords:30|linebreaks}}
 
-                {{ post.body|truncatewords:30|linebreaks}}
+                {% endfor %}    
 
-            {% endfor %}    
-
-            {% include "pagination.html" with page=posts %}
-            <!-- {% include "pagination.html" with page=page_obj %} -->
-        {%endblock%}
-    ~~~
+                {% include "pagination.html" with page=posts %}
+                <!-- {% include "pagination.html" with page=page_obj %} -->
+            {%endblock%}
+        ~~~
