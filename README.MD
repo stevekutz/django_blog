@@ -979,3 +979,56 @@ tags = TaggableManager()
                 <!-- {% include "pagination.html" with page=page_obj %} -->
             {%endblock%}
         ~~~
+
+#### Retrieve similar posts
+
+1) Modify `views.py` 
+
+- add `Count` import
+
+    ~~~ py
+    from django.db.models import Count
+    ~~~
+
+- add the following to the bottom of the `post_detail` function
+- the last four aggregated posts are sliced using the calculated field `-same_tags`
+
+    ~~~ py
+        post_tags_ids = post.tags.values_list('id', flat = True)
+        similar_posts = Post.published.filter(tags__in=post_tags_ids).exclude(id=post.id)
+        similar_posts = similar_posts.annotate(same_tags=Count('tags')).order_by('-same_tags', '-publish')[:4]
+
+        context = {'post': post, 'comments': comments, 
+                'new_comment': new_comment, 'comment_form': comment_form,
+                'similar_posts': similar_posts }
+
+        return render(request, 'blog/post/detail.html', context)  
+    ~~~
+
+2) Modify the `detail` template to show posts that are similar
+
+    ~~~ py
+        ...
+        {{post.body|linebreaks}}
+
+            <p>
+                <a href = "{% url "blog:post_share" post.id %}"> Share this post </a>
+            </p>
+
+            <h2> Similar Posts </h2>
+            {% for post in similar_posts %}
+                <p>
+                    <a href = "{{ post.get_absolute_url }}"> {{post.title}} </a>
+                </p>
+            {% empty %}
+                There are no similar posts yet
+            {% endfor %}
+
+            <p>
+                <a href = '/blog'> return to all blogs </a>
+            </p> 
+        
+
+        ...
+    ~~~
+
