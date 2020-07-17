@@ -27,16 +27,16 @@
 
 6) Run migration to setup tables for applications
 
-- NOTE: you must change directory to the project folder before running migration
+    - NOTE: you must change directory to the project folder before running migration
 
     ~~~ bash
     cd mysite
     python manage.py migrate
     ~~~
 
-- The following tables are created
+    - The following tables are created
 
-   <img src = "First_Migration_.png"/> 
+        <img src = "First_Migration_.png"/> 
 
 7) Run the Django development server to verify installation
 
@@ -46,54 +46,54 @@
 
 #### Setup blog application
 
-1) Create basic strucutre of blog application within project folder
-
-~~~ py
-python manange.py startapp blog 
-~~~
-
-2) Create the Post model
-- The Post model subclasses the `django.models.Model` class in which each attribute field represents a database field
-- A `slug` is a short label that contains only letters, underscores, numbers, or hyphens and is used to create SEO-friendly URLs
-- the `author` field creates a `many-to-one` relationship where many posts are associated with a specific author(e.g. User)
-- the `status` field uses a choices parameter to reference the constant `STATUS_CHOICES` in which only one item can be assigned. This constant is a `tuple of tuples`
+1) Create basic structure of blog application within project folder
 
     ~~~ py
-    from django.db import models
-    from django.utils import timezone # needed for timestamp of publish, created, & updated attributes
-    from django.contrib.auth.models import User
-
-    # Create your models here.
-    class Post(models.Model):
-        STATUS_CHOICES = (
-            ('draft', 'Draft'),
-            ('published', 'Published'),
-        )
-
-        title = models.CharField(max_length = 250)
-        slug = models.SlugField(max_length = 250, unique_for_date = 'publish')
-        author = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'blog_posts')
-        body = models.TextField()
-        publish = models.DateTimeField(default = timezone.now) # date with timezone info
-        created = models.DateField(auto_now_add = True) # date when post initially created
-        updated = models.DateTimeField(auto_now=True)
-        status = models.CharField(max_length = 10, choices = STATUS_CHOICES, default = 'draft')
-
-        class Meta:     # just a class container with some options (metadata)
-            ordering = ('-publish', )   # the negative puts in descending order from most recently pubished
-
-        def __str__(self):   # creates a human-readable representation of the object
-            return self.title
+    python manange.py startapp blog 
     ~~~
+
+2) Create the Post model
+   - The Post model subclasses the `django.models.Model` class in which each attribute field represents a database field
+   - A `slug` is a short label that contains only letters, underscores, numbers, or hyphens and is used to create SEO-friendly URLs
+   - the `author` field creates a `many-to-one` relationship where many posts are associated with a specific author(e.g. User)
+   - the `status` field uses a choices parameter to reference the constant `STATUS_CHOICES` in which only one item can be assigned. This constant is a `tuple of tuples`
+
+        ~~~ py
+        from django.db import models
+        from django.utils import timezone # needed for timestamp of publish, created, & updated attributes
+        from django.contrib.auth.models import User
+
+        # Create your models here.
+        class Post(models.Model):
+            STATUS_CHOICES = (
+                ('draft', 'Draft'),
+                ('published', 'Published'),
+            )
+
+            title = models.CharField(max_length = 250)
+            slug = models.SlugField(max_length = 250, unique_for_date = 'publish')
+            author = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'blog_posts')
+            body = models.TextField()
+            publish = models.DateTimeField(default = timezone.now) # date with timezone info
+            created = models.DateField(auto_now_add = True) # date when post initially created
+            updated = models.DateTimeField(auto_now=True)
+            status = models.CharField(max_length = 10, choices = STATUS_CHOICES, default = 'draft')
+
+            class Meta:     # just a class container with some options (metadata)
+                ordering = ('-publish', )   # the negative puts in descending order from most recently published
+
+            def __str__(self):   # creates a human-readable representation of the object
+                return self.title
+        ~~~
 
 3) Activate the application
 
-- within `apps.py` is the folowing class
+    - within `apps.py` is the following class
 
-    ~~~ py
-    class BlogConfig(AppConfig):
-        name = 'blog'
-    ~~~
+        ~~~ py
+        class BlogConfig(AppConfig):
+            name = 'blog'
+        ~~~
 
 - add the following to `mysite/settings.py` to activate the app. This tells Django tht this app belongs to projects and to load its models
 
@@ -105,17 +105,17 @@ python manange.py startapp blog
 
 4) Create initial migration for the `Post` model 
 
-- this defines how the database will be modified
-  
-    ~~~ py
-    python manage.py makemigrations blog
-    ~~~
+    - this defines how the database will be modified
+     
+        ~~~ py
+        python manage.py makemigrations blog
+        ~~~
 
-- to see the SQL(it won't actually be run) that Django will run to implement the migration, run the following
+    - to see the SQL(it won't actually be run) that Django will run to implement the migration, run the following
 
-    ~~~ py
-    python manage.py sqlmigrate blog 0001
-    ~~~
+       ~~~ py
+       python manage.py sqlmigrate blog 0001
+       ~~~
 
 
 5) Apply the migration
@@ -124,9 +124,9 @@ python manange.py startapp blog
     python manage.py migrate
     ~~~
 
-- the database now has the `blog_post` table
- 
-    <img src = "Post_model_Migration.png"/>
+    - the database now has the `blog_post` table
+
+        <img src = "Post_model_Migration.png"/>
 
 
 #### Setup Admin
@@ -139,20 +139,20 @@ python manange.py startapp blog
 
 2) Register models to admin site
 
-- orig
+    - orig
 
-    ~~~ py
-    from django.contrib import admin
-    ~~~
+        ~~~ py
+          from django.contrib import admin
+        ~~~
 
-- updated 
-    ~~~ py
-    from django.contrib import admin
-    from .models import Post
+    - updated 
+        ~~~ py
+        from django.contrib import admin
+        from .models import Post
 
-    # Register your models here.
-    admin.site.register(Post)
-    ~~~
+        # Register your models here.
+        admin.site.register(Post)
+        ~~~
     
 3) Launch server and log into admin panel at URL `http://127.0.0.1:8000/admin` too see the admin panel
 
@@ -160,7 +160,7 @@ python manange.py startapp blog
 
 4) Select Add post and note timezone message
 
-   - message varies depending on your actual timezone
+    - message varies depending on your actual timezone
 
         <img src = "Addpost_timezone_message.png" width = "50%"/>
 
@@ -184,28 +184,28 @@ python manange.py startapp blog
 
 1) Add the following model to `admin.py`
 
-   - note the `admin options` 
-     
-   -  <a href = "https://docs.djangoproject.com/en/3.0/ref/contrib/admin/"> Django admin options </a>
+    - note the `admin options` 
+        
+        -  <a href = "https://docs.djangoproject.com/en/3.0/ref/contrib/admin/"> Django admin options </a>
 
-    ~~~ py
-    from django.contrib import admin
-    from .models import Post
+        ~~~ py
+        from django.contrib import admin
+        from .models import Post
 
-    # Register your models here.
-    # admin.site.register(Post)
+        # Register your models here.
+        # admin.site.register(Post)
 
-    # Custom models 
-    @admin.register(Post)   # decorator performs same as admin.site.register(Post)
-    class PostAdmin(admin.ModelAdmin):
-        list_display = ('title', 'slug', 'author', 'publish', 'status')
-        list_filter = ('status', 'created', 'publish', 'author')
-        search_fields = ('title', 'body')
-        prepopulated_fields = {'slug': ('title',)}
-        raw_id_fields = ('author',)
-        date_hierarchy = 'publish'
-        ordering = ('status', 'publish')
-    ~~~
+        # Custom models 
+        @admin.register(Post)   # decorator performs same as admin.site.register(Post)
+        class PostAdmin(admin.ModelAdmin):
+           list_display = ('title', 'slug', 'author', 'publish', 'status')
+           list_filter = ('status', 'created', 'publish', 'author')
+           search_fields = ('title', 'body')
+           prepopulated_fields = {'slug': ('title',)}
+           raw_id_fields = ('author',)
+           date_hierarchy = 'publish'
+           ordering = ('status', 'publish')
+        ~~~
 
 #### Create list & detail views
 
@@ -223,91 +223,91 @@ python manange.py startapp blog
 
     def post_detail(request, year, month, day, post):
         post = get_object_or_404(Post, 
-                                slug = post, 
-                                status = 'published', 
-                                publish__year = year,
-                                publish__month = month,
-                                publish__day = day)    
+            slug = post, 
+            status = 'published', 
+            publish__year = year,
+            publish__month = month,
+            publish__day = day)    
 
         return render(request, 'blog/post/detail.html', {'post': post}) 
     ~~~
 
 2) Add URL patterns for views in the blog app
 
-- this maps URLs to views
-- the first pattern does not have arguments
-- the second pattern take four arguments
-- angle brackets are used to capture values from a URL as a strings
-- `path converters` are used to capture values. For example, <int:year> looks for a int parameter and returns an integer. Likewise, <slug:post> matches a slug string
-- <a href = "https://docs.djangoproject.com/en/3.0/topics/http/urls/#path-converters"> Django path converters</a>
-- `name` maps the view
-    ~~~ py
-    from django.urls import path
-    from . import views
+    - this maps URLs to views
+    - the first pattern does not have arguments
+    - the second pattern take four arguments
+    - angle brackets are used to capture values from a URL as a strings
+    - `path converters` are used to capture values. For example, <int:year> looks for a int parameter and returns an integer.  Likewise, <slug:post> matches a slug string
+    - <a href = "https://docs.djangoproject.com/en/3.0/topics/http/urls/#path-converters"> Django path converters</a>
+    - `name` maps the view
+        ~~~ py
+        from django.urls import path
+        from . import views
 
-    app_name = 'blog'
+        app_name = 'blog'
 
-    urlpatterns = [
-        # post views
-        path('', views.post_list, name = 'post_list'),
-        path('<int:year>/<int:month>/<int:day>/<slug:post>/', views.post_detail, name = 'post_detail'),
-        
-    ]
-    ~~~
+        urlpatterns = [
+            # post views
+            path('', views.post_list, name = 'post_list'),
+            path('<int:year>/<int:month>/<int:day>/<slug:post>/', views.post_detail, name = 'post_detail'),
+            
+        ]
+        ~~~
 
 3) Update the project `urls.py`
 
-- add the `include` import
+    - add the `include` import
 
-- add the following to the `urlpatterns` variable
+    - add the following to the `urlpatterns` variable
 
-- the `namespace` blog allow precise reversing of `names URL patterns`
+    - the `namespace` blog allow precise reversing of `names URL patterns`
 
-    ~~~ py
+        ~~~ py
 
-    from django.urls import path, include
+        from django.urls import path, include
 
-    urlpatterns = [
-        path('admin/', admin.site.urls),
-        path('blog/', include('blog.urls', namespace = 'blog')),
+        urlpatterns = [
+            path('admin/', admin.site.urls),
+            path('blog/', include('blog.urls', namespace = 'blog')),
 
-    ]
+        ]
 
-    ~~~
+        ~~~
 
 #### Implement Canonical URLs for models
 
-- Canonical means `preferred` and is a unique URL
-- the `reverse` method allows URLs to be built using their name and also allows passing additional parameters
+    - Canonical means `preferred` and is a unique URL
+    - the `reverse` method allows URLs to be built using their name and also allows passing additional parameters
 
-- Add the following to `models.py`
-- import `reverse`
+    - Add the following to `models.py`
+    - import `reverse`
 
-    ~~~ py
-    from django.urls import reverse
-    ~~~
+        ~~~ py
+        from django.urls import reverse
+        ~~~
 
-- create `get_absolute_url` method to link to specific posts
+    - create `get_absolute_url` method to link to specific posts
 
-    ~~~ py
+        ~~~ py
 
-    def get_absolute_url(self):
-        return reverse("blog:post_detail",   # define args next, kwargs can also be implmented
-                         args=[self.publish.year,
-                               self.publish.month,
-                               self.publish.day,
-                               self.slug ])
-    
-    ~~~
+        def get_absolute_url(self):
+            return reverse("blog:post_detail",   # define args next, kwargs can also be implmented
+                             args=[self.publish.year,
+                                   self.publish.month,
+                                   self.publish.day,
+                                   self.slug ])
+        
+        ~~~
 
 #### Update the models
-- import `reverse`
+    - import `reverse`
 
-    ~~~ py
-    from django.urls import reverse
-    ~~~
+        ~~~ py
+        from django.urls import reverse
+        ~~~
 
-- 
+    - 
 
 #### Create templates for the views    
 
@@ -315,71 +315,71 @@ python manange.py startapp blog
 
     <img src = 'template_structure.png'/>
 
-- use template tags, template variables, and template filters to create templates
+   - use template tags, template variables, and template filters to create templates
 
 2) Create the `base.html` template
 
-- utilizes `static files`
+    - utilizes `static files`
 
-    ~~~ html
-    {% load static %}
-    <!DOCTYPE html>
-    <html>
-        <head>
-            <title>{% block title %} {% endblock %} </title>
-            <link href = "{% static "css/blog.css"%}" rel = "stylesheet">
-        </head>
+        ~~~ html
+        {% load static %}
+        <!DOCTYPE html>
+        <html>
+            <head>
+               <title>{% block title %} {% endblock %} </title>
+               <link href = "{% static "css/blog.css"%}" rel = "stylesheet">
+            </head>
 
-        <body>
+            <body>
 
-            <div id = "content">
-                {% block content %}
+                <div id = "content">
+                    {% block content %}
 
-                {% endblock %}
+                    {% endblock %}
 
-            </div>
+                </div>
 
-            <div id = "sidebar">
-                <h2> My blog </h2>
-                <p> This is my blog </p>
+                <div id = "sidebar">
+                    <h2> My blog </h2>
+                    <p> This is my blog </p>
 
-            </div>
+                </div>
 
-        </body>
+            </body>
 
-    </html>
-    ~~~
+        </html>
+        ~~~
 
 3) Create the `list.html`template
 
-- `extends` allows this template to inherit from the `base.html` file
-- 2 template filters are applied in the body of the post
+    - `extends` allows this template to inherit from the `base.html` file
+    - 2 template filters are applied in the body of the post
 
-    ~~~ html
-    {% extends "blog/base.html" %}
+        ~~~ html
+        {% extends "blog/base.html" %}
 
-    {% block title %} My Blog {% endblock %}
+        {% block title %} My Blog {% endblock %}
 
-    {% block content %}
-        <h1> My Blog! </h1>
+        {% block content %}
+            <h1> My Blog! </h1>
 
-        {% for post in posts %}
-            <h2>
-                <a href = "{{ post.get_absolute_url }}">
-                    {{ post.title }}
-                </a>
-            </h2>
+            {% for post in posts %}
+                <h2>
+                    <a href = "{{ post.get_absolute_url }}">
+                        {{ post.title }}
+                    </a>
+                </h2>
 
-            <p class = "date">
-                Published {{ post.publish }} by {{ post.author }}
-            </p>
+                <p class = "date">
+                    Published {{ post.publish }} by {{ post.author }}
+                </p>
 
-            {{ post.body|truncatewords:30|linebreaks}}
+                {{ post.body|truncatewords:30|linebreaks}}
 
-        {% endfor %}
+            {% endfor %}
 
-    {%endblock%}
-    ~~~
+        {%endblock%}
+        ~~~
 
 4) Create `detail.html` template
 
@@ -496,38 +496,38 @@ python manange.py startapp blog
 
 1) Create a `forms.py` file inside the blog app
 
-- this subclassess the bse Form class
-- the CharField typcially renders as a HTML `input` element
-- `widget = forms.Textarea` overrides this and renders as an HTML `textarea` element
-- email validation is done on anything with `EmailField()`
-- <a href = 'https://docs.djangoproject.com/en/3.0/ref/forms/fields/'> Django Form Fields documentation <a/>
+    - this subclassess the base Form class
+    - the CharField typcially renders as a HTML `input` element
+    - `widget = forms.Textarea` overrides this and renders as an HTML `textarea` element
+    - email validation is done on anything with `EmailField()`
+    - <a href = 'https://docs.djangoproject.com/en/3.0/ref/forms/fields/'> Django Form Fields documentation <a/>
 
-    ~~~ py
-    from django import forms
+        ~~~ py
+        from django import forms
 
-    class EmailPostForm(forms.Form):
-        name = forms.CharField(max_length = 25)
-        email = forms.EmailField()
-        to = forms.EmailField()
-        comments = forms.CharField(required = False, widget = forms.Textarea)
-    ~~~
+        class EmailPostForm(forms.Form):
+           name = forms.CharField(max_length = 25)
+           email = forms.EmailField()
+           to = forms.EmailField()
+           comments = forms.CharField(required = False, widget = forms.Textarea)
+        ~~~
 
 2) Create a view for the form
 
-- add the `EmailPostForm` import to `views.py`
+    - add the `EmailPostForm` import to `views.py`
 
-~~~ py
-from .forms import EmailPostForm
-~~~
+    ~~~ py
+    from .forms import EmailPostForm
+    ~~~
 
-- Add the `post_share` view
+    - Add the `post_share` view
 
-- it has both `request` & `post_id` as parameters
-- `get_object_or_404` verifies that post has `published status`
-- the same view is used for initial blank forms as well as forms with submitted data
-- a `GET` request indicates an empty form has to be displayed
-- a `POST` request indicates that valid form data has been submitted for the form to process
-- `request.method = POST` distinguishes between these twp scenarios
+    - it has both `request` & `post_id` as parameters
+    - `get_object_or_404` verifies that post has `published status`
+    - the same view is used for initial blank forms as well as forms with submitted data
+    - a `GET` request indicates an empty form has to be displayed
+    - a `POST` request indicates that valid form data has been submitted for the form to process
+    - `request.method = POST` distinguishes between these twp scenarios
 
 #### Sending emails with Django
 
@@ -558,11 +558,12 @@ from .forms import EmailPostForm
     ~~~
 
 3) Modify `views.py`
-   - import send_mail
 
-       ~~~ py
-       from django.core.mail import send_mail
-       ~~~
+    - import send_mail
+
+        ~~~ py
+        from django.core.mail import send_mail
+        ~~~
 
 - modify `post_share` in `views.py`
     - A URI (Uniform Resource Identifier) is a string that refers to a resource such as a URL
@@ -646,29 +647,29 @@ from .forms import EmailPostForm
 
 1) Add a model for storing comments
 
-- The `ForeignKey` associates one `Post` to many `Commments`
-- this is a `one-to-many` relationship
-- the `related_name` attribute allows retrieval  all of a post's comments using `post.comments.all()`
-- If `related_name` was not defined, Django would use `comment_set` instead
-- Generally, `related_name` is the name to use for the relation from the related object back to this one
-- the `active` attribute allows for comments to be turned off(e.g. hidden)
+    - The `ForeignKey` associates one `Post` to many `Commments`
+    - this is a `one-to-many` relationship
+    - the `related_name` attribute allows retrieval  all of a post's comments using `post.comments.all()`
+    - If `related_name` was not defined, Django would use `comment_set` instead
+    - Generally, `related_name` is the name to use for the relation from the related object back to this one
+    - the `active` attribute allows for comments to be turned off(e.g. hidden)
 
-    ~~~ py
-    class Comment(models.Model):
-        post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
-        name = models.CharField(max_length=80)
-        email = models.EmailField()
-        body = models.TextField()
-        created = models.DateTimeField(auto_now_add = True)
-        updated = models.DateTimeField(auto_now=True)
-        active = models.BooleanField(default = True)
+        ~~~ py
+        class Comment(models.Model):
+            post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+            name = models.CharField(max_length=80)
+            email = models.EmailField()
+            body = models.TextField()
+            created = models.DateTimeField(auto_now_add = True)
+            updated = models.DateTimeField(auto_now=True)
+            active = models.BooleanField(default = True)
 
-        class Meta:  # just a class container with some options (metadata)
-            ordering: ('created',)
+            class Meta:  # just a class container with some options (metadata)
+               ordering: ('created',)
 
-        def __str__(self):
-            return f'Comment by {self.name} on {self.post}' 
-    ~~~
+            def __str__(self):
+               return f'Comment by {self.name} on {self.post}' 
+        ~~~
 
 2) Create a new migration in terminal of the virtual environment
 
@@ -684,30 +685,30 @@ from .forms import EmailPostForm
 
 4) Register model with the admin interface in `admin.py`
 
-- include the `Comment` import
+    - include the `Comment` import
 
-- add the custom Model
+   - add the custom Model
 
-    ~~~ py
-    @admin.register(Comment)
-    class CommentAdmin(admin.ModelAdmin):
-        list_display = ('name', 'email', 'post', 'created', 'active' )
-        list_filter = ('active', 'created', 'updated')
-        search_fields = ('name', 'email', 'body')
-    ~~~
+        ~~~ py
+        @admin.register(Comment)
+        class CommentAdmin(admin.ModelAdmin):
+           list_display = ('name', 'email', 'post', 'created', 'active' )
+           list_filter = ('active', 'created', 'updated')
+           search_fields = ('name', 'email', 'body')
+        ~~~
 
 5) Modify `forms.py` to allow dynamically built forms from `Comment` model
 
-- include the `Comment` import
+    - include the `Comment` import
 
-- add th following class
+    - add th following class
 
-    ~~~ py
-    class CommentForm(forms.ModelForm):
-        class Meta:
-            model = Comment
-            fields = ('name', 'email', 'body')
-    ~~~
+        ~~~ py
+        class CommentForm(forms.ModelForm):
+            class Meta:
+                model = Comment
+                fields = ('name', 'email', 'body')
+        ~~~
 
 6) Modify the `post_detail` view    
 
@@ -799,7 +800,7 @@ from .forms import EmailPostForm
         </p>
 
         <p>
-                <a href = '/blog'> return to all blogs </a>
+            <a href = '/blog'> return to all blogs </a>
         </p>
 
     ~~~
@@ -808,11 +809,11 @@ from .forms import EmailPostForm
 
 1) Utilize the 3rd party app `django-taggit`
 
-- from virtual environment in terminal run
+    - from virtual environment in terminal run
 
-    ~~~ bash
-    pip install django_taggit
-    ~~~
+        ~~~ bash
+        pip install django_taggit
+        ~~~
 
  2) Add the app to `INSTALLED_APPS` in `settings.py`
 
@@ -827,41 +828,41 @@ from .forms import EmailPostForm
 
  3) Add `taggit` to `models.py`
 
-- import taggit
+    - import taggit
 
-    ~~~ py
-    from taggit.managers import TaggableManager
-    ~~~
+        ~~~ py
+        from taggit.managers import TaggableManager
+        ~~~
 
-- append to the `Post` model
-- the `tags` manager allows adding, retreiving, &  removal of tags from `Post` objects
-~~~ py
-tags = TaggableManager()
-~~~
+    - append to the `Post` model
+    - the `tags` manager allows adding, retreiving, &  removal of tags from `Post` objects
+        ~~~ py
+        tags = TaggableManager()
+        ~~~
 
-4) Create a migration for the changes to `model.py`
+2) Create a migration for the changes to `model.py`
 
     ~~~ py
     python manage.py makemigrations blog
     ~~~ 
 
-5) Run migration
+3) Run migration
 
     ~~~ py
     python manage.py migrate
     ~~~
 
-6) Modify the `list` template to display tags
+4) Modify the `list` template to display tags
 
-- the `join` template filter
-- <a href = "https://docs.djangoproject.com/en/3.0/ref/templates/builtins/#filter"> Django templte filters </a>
+    - the `join` template filter
+    - <a href = "https://docs.djangoproject.com/en/3.0/ref/templates/builtins/#filter"> Django templte filters </a>
 
-    ~~~ py
-        ...
-        {{ post.title }}
+        ~~~ py
+            ...
+            {{ post.title }}
 
-        <p class = 'tags'> Tags: {{ post.tags.all|join:", " }}</p>
-        ...
+            <p class = 'tags'> Tags: {{ post.tags.all|join:", " }}</p>
+            ...
     ~~~
 
 7) Modify `views.py` to allow listing of posts with a specific tag
@@ -984,26 +985,26 @@ tags = TaggableManager()
 
 1) Modify `views.py` 
 
-- add `Count` import
+    - add `Count` import
 
-    ~~~ py
-    from django.db.models import Count
-    ~~~
+        ~~~ py
+        from django.db.models import Count
+        ~~~
 
-- add the following to the bottom of the `post_detail` function
-- the last four aggregated posts are sliced using the calculated field `-same_tags`
+    - add the following to the bottom of the `post_detail` function
+    - the last four aggregated posts are sliced using the calculated field `-same_tags`
 
-    ~~~ py
-        post_tags_ids = post.tags.values_list('id', flat = True)
-        similar_posts = Post.published.filter(tags__in=post_tags_ids).exclude(id=post.id)
-        similar_posts = similar_posts.annotate(same_tags=Count('tags')).order_by('-same_tags', '-publish')[:4]
+        ~~~ py
+            post_tags_ids = post.tags.values_list('id', flat = True)
+            similar_posts = Post.published.filter(tags__in=post_tags_ids).exclude(id=post.id)
+            similar_posts = similar_posts.annotate(same_tags=Count('tags')).order_by('-same_tags', '-publish')[:4]
 
-        context = {'post': post, 'comments': comments, 
-                'new_comment': new_comment, 'comment_form': comment_form,
-                'similar_posts': similar_posts }
+            context = {'post': post, 'comments': comments, 
+                    'new_comment': new_comment, 'comment_form': comment_form,
+                    'similar_posts': similar_posts }
 
-        return render(request, 'blog/post/detail.html', context)  
-    ~~~
+            return render(request, 'blog/post/detail.html', context)  
+        ~~~
 
 2) Modify the `detail` template to show posts that are similar
 
