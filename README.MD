@@ -6,26 +6,23 @@
     python3 -m venv my_env
     ~~~
 
-3) Activate virtual environment
+2) Activate virtual environment
 
     ~~~ bash
     source my_env/bin/activate
-    ~~~
-
-4) Install Django
+    
+3) Install Django
 
     ~~~ bash
     pip install Django
-    ~~~
 
-
-5) Create `mysite` project
+4) Create `mysite` project
 
     ~~~ bash
     django-admin startproject mysite
     ~~~
 
-6) Run migration to setup tables for applications
+5) Run migration to setup tables for applications
 
     - NOTE: you must change directory to the project folder before running migration
 
@@ -38,7 +35,7 @@
 
         <img src = "First_Migration_.png"/> 
 
-7) Run the Django development server to verify installation
+6) Run the Django development server to verify installation
 
     ~~~ bash
     python manage.py runserver
@@ -154,7 +151,7 @@
         admin.site.register(Post)
         ~~~
     
-3) Launch server and log into admin panel at URL `http://127.0.0.1:8000/admin` too see the admin panel
+3) Launch server and log into admin panel at URL `http://127.0.0.1:8000/admin` to see the admin panel
 
     <img src = "Admin_panel.png" width = "60%"/>
 
@@ -353,7 +350,7 @@
 3) Create the `list.html`template
 
     - `extends` allows this template to inherit from the `base.html` file
-    - 2 template filters are applied in the body of the post
+    - Two template filters are applied in the body of the post
 
         ~~~ html
         {% extends "blog/base.html" %}
@@ -439,13 +436,13 @@
 
 #### Using Class-based views
 
-- views are implemented as Python objects instead of functions
+- Views are implemented as Python objects instead of functions
 
 1) Add `from django.views.generic import ListView` to `views.py`
 
 2) Create the following class-based view in `views.py`
 
-- the following two lines are analogous and create the queryset
+- The following two lines are analogous and create the queryset
 
     ~~~ py
         model = Post
@@ -475,16 +472,16 @@
 
 4) Update the `list.html` file to receive an obj
 
-- NOTE: you must not put any spaces within `page=page_obj`
+    - NOTE: you must not put any spaces within `page=page_obj`
 
-    ~~~ html
-        {% endfor %}
+        ~~~ html
+            {% endfor %}
 
-        <!--  {% include "pagination.html" with page=posts %} -->
-        {% include "pagination.html" with page=page_obj %}
-    {%endblock%}
+            <!--  {% include "pagination.html" with page=posts %} -->
+            {% include "pagination.html" with page=page_obj %}
+        {%endblock%}
 
-    ~~~
+        ~~~
 
 5) Add a link to return to the main blogs page
 
@@ -500,7 +497,7 @@
     - the CharField typcially renders as a HTML `input` element
     - `widget = forms.Textarea` overrides this and renders as an HTML `textarea` element
     - email validation is done on anything with `EmailField()`
-    - <a href = 'https://docs.djangoproject.com/en/3.0/ref/forms/fields/'> Django Form Fields documentation <a/>
+    - <a href = 'https://docs.djangoproject.com/en/3.0/ref/forms/fields/'> Django Form Fields documentation </a>
 
         ~~~ py
         from django import forms
@@ -538,24 +535,24 @@
     ~~~
 
 2) To use the SMTP server for gmail, add the following with a valid gmail account
-- IMPORTANT !! You can hide this info from tracking this sensitive info in github by going into the directory and issuing the following command to halt tracking changes on settings.py
-- TLS is a cryptographic protocol that provides end-to-end security of data sent between applications over the Internet.
-    ~~~ bash
-    git update-index --assume-unchanged settings.py
-    ~~~
+    - IMPORTANT !! You can hide this info from tracking this sensitive info in github by going into the directory and issuing the following command to halt tracking changes on settings.py
+    - TLS is a cryptographic protocol that provides end-to-end security of data sent between applications over the Internet.
+        ~~~ bash
+        git update-index --assume-unchanged settings.py
+        ~~~
 
-    NOTE - This will restore tracking changes !
-    ~~~ bash
-    git update-index --no-assume-unchanged settings.py
-    ~~~
+        NOTE - This will restore tracking changes !
+        ~~~ bash
+        git update-index --no-assume-unchanged settings.py
+        ~~~
 
-    ~~~ py
-    EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_HOST_USER = 'valid_gmail_account@gmail.com'
-    EMAIL_HOST_PASSWORD = 'password for the account'
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    ~~~
+        ~~~ py
+        EMAIL_HOST = 'smtp.gmail.com'
+        EMAIL_HOST_USER = 'valid_gmail_account@gmail.com'
+        EMAIL_HOST_PASSWORD = 'password for the account'
+        EMAIL_PORT = 587
+        EMAIL_USE_TLS = True
+        ~~~
 
 3) Modify `views.py`
 
@@ -565,37 +562,37 @@
         from django.core.mail import send_mail
         ~~~
 
-- modify `post_share` in `views.py`
-    - A URI (Uniform Resource Identifier) is a string that refers to a resource such as a URL
-    - get_absolute_url() method to tell Django how to calculate the canonical URL for an object. To callers, this method should appear to return a string that can be used to refer to the object over HTTP.
-    - an example of cd is `cd is {'name': 'ME', 'email': 'sktestdjango@gmail.com', 'to': 'sktestdjango@gmail.com', 'comments': 'Some comment'}`
+    - modify `post_share` in `views.py`
+        - A URI (Uniform Resource Identifier) is a string that refers to a resource such as a URL
+        - get_absolute_url() method to tell Django how to calculate the canonical URL for an object. To callers, this method should appear to return a string that can be used to refer to the object over HTTP.
+        - an example of cd is `cd is {'name': 'ME', 'email': 'sktestdjango@gmail.com', 'to': 'sktestdjango@gmail.com', 'comments': 'Some comment'}`
 
-        ~~~ py
-        def post_share(request, post_id):
-            # Retrieve post by ID
-            post = get_object_or_404(Post, id = post_id, status = "published")
-            sent = False
+            ~~~ py
+            def post_share(request, post_id):
+                # Retrieve post by ID
+                post = get_object_or_404(Post, id = post_id, status = "published")
+                sent = False
 
-            if request.method == 'POST':
-                # form was submitted with data
-                form = EmailPostForm(request.POST)
-                if form.is_valid():
-                    # Form fields passed validation
-                    cd = form.cleaned_data 
-                    # ... send email
-                    post_url = request.build_absolute_uri(post.get_absolute_url())
-                    subject = f"{cd['name']} recommends you read " f"{post.title}"
-                    message = f"Read {post.title} at {post_url} \n\n" f"{cd['name']}\'s comments: {cd['comments']}"
-                    send_mail(subject, message, 'sktestdjango@gmail.com', [cd['to']])
-                    sent = True
+                if request.method == 'POST':
+                    # form was submitted with data
+                    form = EmailPostForm(request.POST)
+                    if form.is_valid():
+                        # Form fields passed validation
+                        cd = form.cleaned_data 
+                        # ... send email
+                        post_url = request.build_absolute_uri(post.get_absolute_url())
+                        subject = f"{cd['name']} recommends you read " f"{post.title}"
+                        message = f"Read {post.title} at {post_url} \n\n" f"{cd['name']}\'s comments: {cd['comments']}"
+                        send_mail(subject, message, 'sktestdjango@gmail.com', [cd['to']])
+                        sent = True
 
-            else:  # show blank form
-                form = EmailPostForm()
+                else:  # show blank form
+                    form = EmailPostForm()
 
-            context = {'post': post, 'form': form, 'sent': sent}
+                context = {'post': post, 'form': form, 'sent': sent}
 
-            return render(request, 'blog/post/share.html', context)  
-        ~~~
+                return render(request, 'blog/post/share.html', context)  
+            ~~~
 
 1) Add the path in `/blogs/urls.py`    
 
@@ -687,7 +684,7 @@
 
     - include the `Comment` import
 
-   - add the custom Model
+    - add the custom Model
 
         ~~~ py
         @admin.register(Comment)
@@ -701,7 +698,7 @@
 
     - include the `Comment` import
 
-    - add th following class
+    - add the following class
 
         ~~~ py
         class CommentForm(forms.ModelForm):
@@ -712,53 +709,53 @@
 
 6) Modify the `post_detail` view    
 
-- import the `Comment` model and `CommentForm`
+    - import the `Comment` model and `CommentForm`
 
-    ~~~ py
-    from .models import Post, Comment
-    from .forms import EmailPostForm, CommentForm
-    ~~~
+        ~~~ py
+        from .models import Post, Comment
+        from .forms import EmailPostForm, CommentForm
+        ~~~
 
-    ~~~ py
-    def post_detail(request, year, month, day, post):
-        post = get_object_or_404(Post, 
-                                slug = post, 
-                                status = 'published', 
-                                publish__year = year,
-                                publish__month = month,
-                                publish__day = day)    
+        ~~~ py
+        def post_detail(request, year, month, day, post):
+            post = get_object_or_404(Post, 
+                                   slug = post, 
+                                   status = 'published', 
+                                   publish__year = year,
+                                   publish__month = month,
+                                   publish__day = day)    
 
 
 
-        # list of active comments for this post
-        comments = post.comments.filter(active = True)
+            # list of active comments for this post
+            comments = post.comments.filter(active = True)
 
-        new_comment = None
+            new_comment = None
 
-        if request.method == 'POST':
-            # A comment was posted
-            comment_form = CommentForm( data=request.POST )
+            if request.method == 'POST':
+                # A comment was posted
+                comment_form = CommentForm( data=request.POST )
 
-            if comment_form.is_valid():
-                # create comment obj but do not save to database yet
-                new_comment = comment_form.save(commit = False)
-                # Assign current post to comment
-                new_comment.post = post
-                # Save the comment to the database
-                new_comment.save()
+                if comment_form.is_valid():
+                    # create comment obj but do not save to database yet
+                    new_comment = comment_form.save(commit = False)
+                    # Assign current post to comment
+                    new_comment.post = post
+                    # Save the comment to the database
+                    new_comment.save()
 
-        else:  # provide blank comment form
+            else:  # provide blank comment form
                 comment_form = CommentForm()
 
 
-        context = {'post': post, 'comments': comments, 
-                   'new_comment': new_comment, 'comment_form': comment_form }
+            context = {'post': post, 'comments': comments, 
+                      'new_comment': new_comment, 'comment_form': comment_form }
 
-        return render(request, 'blog/post/detail.html', context) 
-    ~~~
+            return render(request, 'blog/post/detail.html', context) 
+        ~~~
 
 7) Add comments to `post_detail` template content block
-
+* 
     ~~~ py
         {% with comments.count as total_comments %}
             <h2>
@@ -840,22 +837,22 @@
         tags = TaggableManager()
         ~~~
 
-2) Create a migration for the changes to `model.py`
+4) Create a migration for the changes to `model.py`
 
     ~~~ py
     python manage.py makemigrations blog
     ~~~ 
 
-3) Run migration
+5) Run migration
 
     ~~~ py
     python manage.py migrate
     ~~~
 
-4) Modify the `list` template to display tags
+6) Modify the `list` template to display tags
 
     - the `join` template filter
-    - <a href = "https://docs.djangoproject.com/en/3.0/ref/templates/builtins/#filter"> Django templte filters </a>
+    - <a href = "https://docs.djangoproject.com/en/3.0/ref/templates/builtins/#filter"> Django template filters </a>
 
         ~~~ py
             ...
